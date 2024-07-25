@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DASHBOARD</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <script>
+        function blockUsers() {
+            var selectedUsers = [];
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            checkboxes.forEach(function(checkbox) {
+                var row = checkbox.parentNode.parentNode;
+
+                var mail = row.querySelector(".mail").innerText;
+                console.log(mail)
+                var user = {
+                    mail: mail
+                };
+                selectedUsers.push(user);
+            });
+            fetch('api/v1/user/block', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedUsers)
+            })
+            .then(response => response  )
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+            setTimeout(() => {
+            location.reload()
+            }, 120);
+        }
+        function unblockUsers() {
+            var selectedUsers = [];
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            checkboxes.forEach(function(checkbox) {
+                var row = checkbox.parentNode.parentNode;
+                var mail = row.querySelector(".mail").innerText;
+                console.log(mail)
+                var user = {
+                    mail: mail
+                };
+                selectedUsers.push(user);
+            });
+            fetch('api/v1/user/unblock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedUsers)
+            })
+            .then(response => response )
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+            setTimeout(() => {
+            location.reload()
+            }, 120);
+
+        }
+        function deleteUsers() {
+            var selectedUsers = [];
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            checkboxes.forEach(function(checkbox) {
+                var row = checkbox.parentNode.parentNode;
+                var mail = row.querySelector(".mail").innerText;
+                console.log(mail)
+                var user = {
+                    mail: mail
+                };
+                selectedUsers.push(user);
+            });
+            fetch('api/v1/user/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedUsers)
+            })
+            .then(response => response )
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+            setTimeout(() => {
+            location.reload()
+            }, 120);
+        }
+    </script>
+</head>
+<body>
+<div class="d-flex justify-content-end ">
+    Hello,<span th:text="${username}"></span>     <a class="mx-1" href="login">Logout</a>
+</div>
+
+<div  class="container  align-items-center justify-content-center">
+
+    <div  th:if="${adminStatus!=false}" class="my-1 w-25 p-3 row card  bd-highlight ">
+        <div>Actions</div>
+        <div class="col-sm-3  py-1 my-1"><button  class="btn-danger"type="button " onclick="blockUsers()">Block</button></div>
+
+        <div class="col-sm-3 py-1 my-1">
+            <button type="btn-secondary " onclick="unblockUsers()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-unlock" viewBox="0 0 16 16">
+                    <path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2M3 8a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1z"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="col-sm-3 py-1 my-1">
+            <button type="btn-secondary" onclick="deleteUsers()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <table class="  p-0 my-1 table-bordered">
+        <thead>
+            <th  class="mail py-1 my-1">   <p th:if="${adminStatus!=false}" >Select</p>  </th>
+            <th class="mail py-1 my-1">Mail</th>
+            <th class="mail py-1 my-1">Position</th>
+            <th class="mail py-1 my-1">Name</th>
+            <th class="mail py-1 my-1">Blocked status</th>
+
+        </thead>
+        <tr th:each="user : ${users}">
+            <td><input th:if="${adminStatus!=false}" id="checkbox" type="checkbox"></td>
+            <td class="mail py-1 my-1" th:text="${user.mail}">Mail</td>
+            <td class="position py-1 my-1" th:text="${user.position}">Password</td>
+            <td class="name py-1 my-1" th:text="${user.name}">Username</td>
+            <td class="blocked py-1 my-1" th:text="${user.blocked ? 'Blocked' : 'Active'}">blocked status</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
